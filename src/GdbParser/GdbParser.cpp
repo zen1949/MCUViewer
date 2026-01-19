@@ -86,12 +86,24 @@ bool GdbParser::parse(const std::string& elfPath)
 		auto end = out.find(delimiter, start);
 		if (end == std::string::npos)
 			break;
-		/* find tylda sign next */
-		start = out.find("~", end);
-		if (start == std::string::npos)
-			break;
-		/* account for tylda and " */
-		start += 2;
+
+		/* check if the filepath is in the same or next MI record */
+		auto tildePos = out.find("~", end);
+		auto colonPos = out.find(":", end);
+
+		if (tildePos != std::string::npos && tildePos < colonPos)
+		{
+			/* find tylda sign next */
+			start = tildePos;
+			/* account for tylda and " */
+			start += 2;
+		}
+		else
+		{
+			/* the filepath is in the same string as "File" */
+			start = end + 4;
+		}
+
 		/* find the end of filepath */
 		end = out.find(":", start);
 		if (end == std::string::npos)
@@ -258,7 +270,7 @@ std::optional<uint32_t> GdbParser::checkAddress(const std::string& name)
 	}
 	catch (...)
 	{
-		logger->warn("stoi incorect argument: {}", address);
+		logger->warn("stoi incorrect argument: {}", address);
 	}
 
 	return addressValue;
