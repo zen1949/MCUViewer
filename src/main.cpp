@@ -2,6 +2,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #include <iostream>
+#include <filesystem>
 
 #include "../commons.hpp"
 #include "CLI11.hpp"
@@ -23,6 +24,7 @@ void prepareCLIParser(bool& debug, std::string& projectPath);
 
 int main(int argc, char** argv)
 {
+	std::cout << "DEBUG: Entered main function." << std::endl;
 	bool debug = false;
 	std::string projectPath = "";
 	prepareCLIParser(debug, projectPath);
@@ -37,6 +39,7 @@ int main(int argc, char** argv)
 		logger->set_level(spdlog::level::info);
 
 	logger->info("Starting MCUViewer!");
+	logger->info("Current working directory: {}", std::filesystem::current_path().string());
 	logger->info("Version: {}.{}.{}", MCUVIEWER_VERSION_MAJOR, MCUVIEWER_VERSION_MINOR, MCUVIEWER_VERSION_REVISION);
 	logger->info("Commit hash {}", GIT_HASH);
 

@@ -22,7 +22,6 @@
 
 Gui::Gui(PlotHandler* plotHandler, VariableHandler* variableHandler, ConfigHandler* configHandler, PlotGroupHandler* plotGroupHandler, IFileHandler* fileHandler, PlotHandler* tracePlotHandler, ViewerDataHandler* viewerDataHandler, TraceDataHandler* traceDataHandler, std::atomic<bool>& done, std::mutex* mtx, spdlog::logger* logger, std::string& projectPath) : plotHandler(plotHandler), variableHandler(variableHandler), configHandler(configHandler), plotGroupHandler(plotGroupHandler), fileHandler(fileHandler), tracePlotHandler(tracePlotHandler), viewerDataHandler(viewerDataHandler), traceDataHandler(traceDataHandler), done(done), mtx(mtx), logger(logger)
 {
-	threadHandle = std::thread(&Gui::mainThread, this, projectPath);
 	plotEditWindow = std::make_shared<PlotEditWindow>(plotHandler, plotGroupHandler, variableHandler);
 	plotsTree = std::make_shared<PlotsTree>(viewerDataHandler, plotHandler, plotGroupHandler, variableHandler, plotEditWindow, fileHandler, logger);
 	variableTable = std::make_shared<VariableTableWindow>(viewerDataHandler, plotHandler, variableHandler, &projectElfPath, &projectConfigPath, logger);
@@ -32,6 +31,8 @@ Gui::Gui(PlotHandler* plotHandler, VariableHandler* variableHandler, ConfigHandl
 		for (std::shared_ptr<Plot> plt : *this->plotHandler)
 			plt->renameSeries(oldName, newName);
 	};
+
+	threadHandle = std::thread(&Gui::mainThread, this, projectPath);
 }
 
 Gui::~Gui()
